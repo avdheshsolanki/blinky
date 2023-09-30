@@ -768,98 +768,76 @@ ul {
     </style>
     <script>
 
+"use strict";
 (() => {
-  class Cat {
-    private _eyelids: NodeList;
-
-    constructor() {
-
-      //瞼
-      this._eyelids = document.querySelectorAll('.cat__eyes__eyelid');
+    class Cat {
+        constructor() {
+            //瞼
+            this._eyelids = document.querySelectorAll('.cat__eyes__eyelid');
+        }
+        get eyelids() {
+            return this._eyelids;
+        }
+        //猫を瞬きさせるメソッド
+        blink() {
+            //.cat__eyes__eyelidに.blinkクラスを追加
+            this._eyelids.forEach((eyelid) => eyelid.classList.add('blink'));
+        }
     }
-
-    get eyelids(): NodeList {
-      return this._eyelids;
+    class Needles {
+        constructor() {
+            //3つの針
+            this.needle = {
+                sec: document.getElementById('sec'),
+                min: document.getElementById('min'),
+                hour: document.getElementById('hour')
+            };
+        }
+        //3つの針を回転させるメソッド
+        rotate(deg) {
+            this.needle.sec.style.transform = `rotateZ(${deg.sec}deg)`;
+            this.needle.min.style.transform = `rotateZ(${deg.min}deg)`;
+            this.needle.hour.style.transform = `rotateZ(${deg.hour}deg)`;
+        }
     }
-
-    //猫を瞬きさせるメソッド
-    blink() {
-
-      //.cat__eyes__eyelidに.blinkクラスを追加
-      this._eyelids.forEach((eyelid: HTMLElement) => eyelid.classList.add('blink'));
+    //それぞれの針の振れ幅
+    const increment = {
+        sec: (360 / 60),
+        min: (360 / 60),
+        hour: (360 / 12)
+    };
+    class Clock {
+        constructor() {
+            this.needles = new Needles;
+            this.cat = new Cat;
+            //Clockクラスがインスタンス化されるとrunメソッドを実行
+            this.run();
+        }
+        //時計を動かすメソッド
+        run() {
+            //現在の秒・分・時間を取得
+            const date = new Date();
+            const sec = date.getSeconds();
+            const min = date.getMinutes();
+            const hour = date.getHours();
+            //針の角度
+            const deg = {
+                sec: sec * increment.sec,
+                min: min * increment.min,
+                hour: hour * increment.hour + min * (360 / 12 / 60)
+            };
+            //瞬きさせる
+            this.cat.blink();
+            //針を回転させる
+            this.needles.rotate(deg);
+            //runメソッドを繰り返し実行
+            requestAnimationFrame(this.run.bind(this));
+        }
     }
-  }
-
-  class Needles {
-    private needle;
-
-    constructor() {
-
-      //3つの針
-      this.needle = {
-        sec: document.getElementById('sec'),
-        min: document.getElementById('min'),
-        hour: document.getElementById('hour')
-      }
-    }
-
-    //3つの針を回転させるメソッド
-    rotate(deg): void {
-      this.needle.sec.style.transform = `rotateZ(${deg.sec}deg)`;
-      this.needle.min.style.transform = `rotateZ(${deg.min}deg)`;
-      this.needle.hour.style.transform = `rotateZ(${deg.hour}deg)`;		
-    }
-  }
-  
-  //それぞれの針の振れ幅
-  const increment = {
-    sec: (360 / 60),
-    min: (360 / 60),
-    hour: (360 / 12)
-  }
-  
-  class Clock {
-    private needles: Needles;
-    private cat: Cat;
-
-    constructor() {
-      this.needles = new Needles;
-      this.cat = new Cat;
-
-      //Clockクラスがインスタンス化されるとrunメソッドを実行
-      this.run();
-    }
-
-    //時計を動かすメソッド
-    run(): void {
-
-      //現在の秒・分・時間を取得
-      const date: Date = new Date();
-      const sec: number = date.getSeconds();
-      const min: number = date.getMinutes();
-      const hour: number = date.getHours();
-
-      //針の角度
-      const deg = {
-        sec: sec * increment.sec,
-        min: min * increment.min,
-        hour: hour * increment.hour + min * (360 / 12 / 60)
-      }
-      
-      //瞬きさせる
-      this.cat.blink();
-      
-      //針を回転させる
-      this.needles.rotate(deg);
-
-      //runメソッドを繰り返し実行
-      requestAnimationFrame(this.run.bind(this));
-    }
-  }
-
-  //時計を起動
-  const clock: Clock = new Clock;
+    //時計を起動
+    const clock = new Clock;
 })();
+
     </script>
 </head>
 <body>
